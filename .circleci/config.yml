@@ -1,0 +1,26 @@
+version: 2.1
+
+jobs:
+  build:
+    working_directory: ~/test
+    resource_class: small
+    docker:
+      - image: alpine
+    steps:
+      - checkout
+      - run: |
+          apk --update add curl
+          curl -X POST $CONTAINER_BUILD_URL
+
+workflows:
+  version: 2
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - dev
+    jobs:
+      - build
